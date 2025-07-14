@@ -1,5 +1,5 @@
 // LoggingMiddleware/log.js
-// import axios from 'axios';
+import axios from 'axios';
 
 export const log = async (stack, level, pkg, message, token) => {
   try {
