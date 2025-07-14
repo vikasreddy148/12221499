@@ -282,8 +282,45 @@ function RedirectHandler() {
       `Redirect handler for ${pathname} rendered`,
       token
     );
+    const shortcode = pathname.replace("/", "");
+    if (!shortcode) return;
+    const stored = JSON.parse(localStorage.getItem("shortlinks") || "[]");
+    const link = stored.find((l) => l.shortcode === shortcode);
+    if (link) {
+      // Log click
+      const click = {
+        timestamp: new Date(),
+        source: window.location.href,
+        location: window.navigator.language || "unknown",
+      };
+      link.clicks.push(click);
+      localStorage.setItem("shortlinks", JSON.stringify(stored));
+      log(
+        "frontend",
+        "info",
+        "redirect",
+        `Redirected to ${link.originalUrl} from ${shortcode}`,
+        token
+      );
+      setTimeout(() => {
+        window.location.href = link.originalUrl;
+      }, 1000);
+    } else {
+      log(
+        "frontend",
+        "error",
+        "redirect",
+        `Shortcode not found: ${shortcode}`,
+        token
+      );
+    }
   }, [pathname]);
-  return <h2>Redirect Handler for {pathname.replace("/", "")}</h2>;
+  const shortcode = pathname.replace("/", "");
+  const stored = JSON.parse(localStorage.getItem("shortlinks") || "[]");
+  const link = stored.find((l) => l.shortcode === shortcode);
+  if (!shortcode) return <h2>Invalid short URL</h2>;
+  if (!link) return <h2>Short URL not found</h2>;
+  return <h2>Redirecting to {link.originalUrl}...</h2>;
 }
 
 function App() {
