@@ -266,10 +266,127 @@ function ShortenPage() {
 }
 
 function StatsPage() {
+  const [links, setLinks] = useState([]);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
+
   useEffect(() => {
     log("frontend", "info", "page", "Stats page rendered", token);
+    const stored = JSON.parse(localStorage.getItem("shortlinks") || "[]");
+    setLinks(stored);
   }, []);
-  return <h2>Stats Page</h2>;
+
+  const handleVisit = (shortUrl) => {
+    window.open(shortUrl, "_blank");
+    setSnackbar({
+      open: true,
+      message: `Navigated to ${shortUrl}`,
+      severity: "info",
+    });
+    log(
+      "frontend",
+      "info",
+      "stats",
+      `User visited short URL: ${shortUrl}`,
+      token
+    );
+  };
+
+  const handleExport = () => {
+    const data = JSON.stringify(links, null, 2);
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "shortlinks_stats.json";
+    a.click();
+    URL.revokeObjectURL(url);
+    setSnackbar({
+      open: true,
+      message: "Exported stats to JSON",
+      severity: "success",
+    });
+    log("frontend", "info", "stats", "Exported stats to JSON", token);
+  };
+
+  return (
+    <div style={{ maxWidth: 800, margin: "auto" }}>
+      <h2>Shortened URLs Stats</h2>
+      <button onClick={handleExport} style={{ marginBottom: 16 }}>
+        Export to JSON
+      </button>
+      {links.length === 0 ? (
+        <div>No short links created yet.</div>
+      ) : (
+        links.map((link, idx) => (
+          <div
+            key={idx}
+            style={{
+              border: "1px solid #ccc",
+              borderRadius: 8,
+              padding: 16,
+              marginBottom: 16,
+            }}
+          >
+            <div>
+              <b>Short URL:</b>{" "}
+              <a href={link.shortUrl} target="_blank" rel="noopener noreferrer">
+                {link.shortUrl}
+              </a>{" "}
+              <button onClick={() => handleVisit(link.shortUrl)}>Visit</button>
+            </div>
+            <div>
+              <b>Original URL:</b> {link.originalUrl}
+            </div>
+            <div>
+              <b>Created:</b> {new Date(link.created).toLocaleString()}
+            </div>
+            <div>
+              <b>Expires:</b> {new Date(link.expiry).toLocaleString()}
+            </div>
+            <div>
+              <b>Click count:</b> {link.clicks.length}
+            </div>
+            <div>
+              <b>Click history:</b>
+              {link.clicks.length === 0 ? (
+                <div style={{ fontSize: 12, color: "#888" }}>
+                  No clicks yet.
+                </div>
+              ) : (
+                <ul style={{ fontSize: 13 }}>
+                  {link.clicks.map((c, i) => (
+                    <li key={i}>
+                      {new Date(c.timestamp).toLocaleString()} | Source:{" "}
+                      {c.source} | Location: {c.location}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        ))
+      )}
+      {snackbar.open && (
+        <div
+          style={{
+            marginTop: 16,
+            color:
+              snackbar.severity === "error"
+                ? "red"
+                : snackbar.severity === "success"
+                ? "green"
+                : "black",
+          }}
+        >
+          {snackbar.message}
+        </div>
+      )}
+    </div>
+  );
 }
 
 function RedirectHandler() {
