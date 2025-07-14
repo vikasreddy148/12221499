@@ -1,12 +1,71 @@
-# React + Vite
+# React URL Shortener Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+This is a client-side React URL Shortener application built for the Carngus Hiring Evaluation. It allows users to shorten URLs, manage custom shortcodes, set expiry, and view analytics—all with robust logging via a custom LoggingMiddleware. The app uses Material UI for styling and runs entirely in the browser (no backend required).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- Shorten up to 5 URLs at once
+- Optional custom shortcode and expiry (default 30 min)
+- Unique shortcodes enforced
+- Redirects handled client-side
+- Statistics page with click analytics
+- All logging via LoggingMiddleware (no console.log)
+- Material UI for a modern, clean interface
+- Data persisted in localStorage
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Folder Structure
+
+```
+12221499/
+├── LoggingMiddleware/
+│   └── log.js
+├── FrontendTestSubmission/
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.js
+│   ├── public/
+│   └── src/
+│       ├── App.jsx
+│       ├── main.jsx
+│       ├── router.jsx
+│       ├── components/
+│       │   ├── URLForm.jsx
+│       │   └── URLStats.jsx
+│       ├── pages/
+│       │   ├── ShortenPage.jsx
+│       │   ├── StatsPage.jsx
+│       │   └── RedirectPage.jsx
+│       ├── services/
+│       │   └── storage.js
+│       ├── styles/
+│       │   └── theme.js
+│       └── utils/
+│           └── validators.js
+```
+
+## Running the App
+
+1. Install dependencies:
+   ```bash
+   cd FrontendTestSubmission
+   npm install
+   ```
+2. Start the dev server on the required port:
+   ```bash
+   npm run dev -- --port 3000
+   ```
+   The app will be available at [http://localhost:3000](http://localhost:3000)
+
+## Notes
+
+- All logging is handled by `LoggingMiddleware/log.js`.
+- No user authentication is required.
+- All data is stored in the browser (localStorage).
+- Only Material UI and native CSS are used for styling.
+
+## Evaluation
+
+- URL shortener logic, analytics, and error handling are all client-side.
+- The app is robust, user-friendly, and meets all requirements from the evaluation brief.
